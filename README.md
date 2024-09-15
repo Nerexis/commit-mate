@@ -1,6 +1,6 @@
 # CommitMate
 
-[![Version](https://img.shields.io/badge/version-0.0.2-blue.svg)](https://marketplace.visualstudio.com/items?itemName=commitmate.commitmate)  
+[![Version](https://img.shields.io/badge/version-0.0.3-blue.svg)](https://marketplace.visualstudio.com/items?itemName=commitmate.commitmate)  
 **CommitMate** is a Visual Studio Code extension that helps generate concise and context-aware commit messages based on staged Git changes using OpenAI's GPT models.
 
 ## Features
