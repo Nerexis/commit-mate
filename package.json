@@ -104,5 +104,9 @@
     "@types/moxios": "^0.4.17",
     "axios": "^1.7.7"
   },
-  "publisher": "nerexis"
+  "publisher": "nerexis",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nerexis/commit-mate"
+  }
 }
