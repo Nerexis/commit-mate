@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished", 
+    "onStartupFinished",
     "onView:scm",
     "onLanguage:plaintext"
   ],
@@ -98,7 +98,7 @@
     "rimraf": "^6.0.1",
     "sinon": "^19.0.2",
     "ts-sinon": "^2.0.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   },
   "dependencies": {
     "@types/moxios": "^0.4.17",
