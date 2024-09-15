@@ -1,0 +1,107 @@
+{
+  "name": "commitmate",
+  "displayName": "CommitMate",
+  "description": "VSCode extension that generates commit messages for staged Git files",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished", 
+    "onView:scm",
+    "onLanguage:plaintext"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.generateCommitMessage",
+        "title": "Generate Commit Message (CommitMate)"
+      },
+      {
+        "command": "commitmate.openOpenAiKeyPage",
+        "title": "Get your OpenAI API key"
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "extension.generateCommitMessage",
+          "when": "scmProvider == git",
+          "group": "navigation"
+        }
+      ],
+      "scm/input": [
+        {
+          "command": "extension.generateCommitMessage",
+          "when": "scmProvider == git",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "CommitMate Settings",
+      "properties": {
+        "commitmate.openAiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your OpenAI API key for generating commit messages.",
+          "markdownDescription": "Enter your OpenAI API key. Click [Get your API key](command:commitmate.openOpenAiKeyPage).",
+          "scope": "window"
+        },
+        "commitmate.openAiModel": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "The model used by the OpenAI API"
+        },
+        "commitmate.openAiUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1/chat/completions",
+          "description": "The OpenAI API URL"
+        },
+        "commitmate.requestPrefix": {
+          "type": "string",
+          "default": "Here is source code diff:",
+          "description": "The prefix to be added to the GPT request message"
+        },
+        "commitmate.requestSuffix": {
+          "type": "string",
+          "default": "Generate a short or medium length commit message for these changes. Don't hallucinate, don't skip any changes, use past tense. Make sure to use past tense like word 'add' should be 'added' etc.",
+          "description": "The suffix to be added to the GPT request message"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "clean": "rimraf out"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.93.0",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.9.1",
+    "moxios": "^0.4.0",
+    "rimraf": "^6.0.1",
+    "sinon": "^19.0.2",
+    "ts-sinon": "^2.0.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@types/moxios": "^0.4.17",
+    "axios": "^1.7.7"
+  }
+}
