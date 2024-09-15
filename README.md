@@ -1,6 +1,6 @@
 # CommitMate
 
-[![Version](https://img.shields.io/badge/version-0.0.3-blue.svg)](https://marketplace.visualstudio.com/items?itemName=commitmate.commitmate)  
+[![Version](https://img.shields.io/badge/version-0.0.3-blue.svg)](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate)  
 **CommitMate** is a Visual Studio Code extension that helps generate concise and context-aware commit messages based on staged Git changes using OpenAI's GPT models.
 
 ## Features
@@ -13,7 +13,7 @@
 
 ## Installation
 
-1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=commitmate.commitmate).
+1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate).
 2. Open your VS Code workspace with a Git repository.
 
 ## Getting Started
@@ -109,7 +109,7 @@ Before submitting a pull request, please make sure:
 - New tests have been added for any new functionality.
 - Code follows the project's coding guidelines.
 
-To report bugs or request features, please use [GitHub Issues](https://github.com/yourusername/commitmate/issues).
+To report bugs or request features, please use [GitHub Issues](https://github.com/Nerexis/commit-mate/issues).
 
 ## Security and Privacy
 
@@ -119,7 +119,7 @@ For more information on OpenAI's privacy policy, refer to [OpenAI Privacy Policy
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/nerexis/commitmate/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Nerexis/commit-mate/blob/main/LICENSE) file for details.
 
 ---
 
