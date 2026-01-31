@@ -9,6 +9,14 @@ const moduleCfg = 'commitmate';
 const openAiApiKeyCfg = 'openAiApiKey';
 const ONBOARDING_COMPLETE_KEY = 'commitmate.onboardingComplete';
 
+const MSG_NO_ACTIVE_REPO = 'No active Git repository found.';
+const MSG_NO_ACTIVE_REPO_HINT = 'Sometimes you might need to click on one of edited files in the Source Control window.';
+const MSG_NO_STAGED_CHANGES = 'No staged changes found.';
+const MSG_GIT_EXTENSION_NOT_FOUND = 'Git extension not found.';
+const MSG_CUSTOM_MODEL_MISSING = 'Custom model is selected but no model name was provided.';
+const MSG_OPENAI_NO_OUTPUT = 'OpenAI response did not contain output text.';
+const MSG_SCM_INPUTBOX_FAIL = 'Unable to set commit message in SCM input box.';
+
 export async function checkOnboarding(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration(moduleCfg);
 	const openAiKey = config.get<string>(openAiApiKeyCfg);
@@ -47,19 +55,23 @@ export async function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand('extension.generateCommitMessage', async () => {
 	logMessage('Generate Commit Message command invoked.');
 	try {
-	  const activeRepository = await getActiveRepository();
+	  let activeRepository = await getActiveRepository();
 	  if (!activeRepository) {
-		logMessage('No active Git repository found. Sometimes you might need to click on one of edited files in the Source Control window.', 'error');
-		showErrorMessage('No active Git repository found.\n\nSometimes you might need to click on one of edited files in the Source Control window.');
-		return;
+		logMessage('No active Git repository found. Attempting to auto-select the first staged change.');
+		activeRepository = await getRepositoryFromStagedChanges();
+		if (!activeRepository) {
+		  logMessage(`${MSG_NO_ACTIVE_REPO} ${MSG_NO_ACTIVE_REPO_HINT}`, 'error');
+		  showErrorMessage(`${MSG_NO_ACTIVE_REPO}\n\n${MSG_NO_ACTIVE_REPO_HINT}`);
+		  return;
+		}
 	  }
 
 	  logMessage('Active repository found.');
 
 	  const stagedChanges = await getStagedDiff(activeRepository);
 	  if (!stagedChanges) {
-		logMessage('No staged changes found.', 'error');
-		showErrorMessage('No staged changes found.');
+		logMessage(MSG_NO_STAGED_CHANGES, 'error');
+		showErrorMessage(MSG_NO_STAGED_CHANGES);
 		return;
 	  }
 
@@ -76,8 +88,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		  scmInputBox.value = commitMessage;
 		  showInformationMessage('Commit message set in SCM input box.');
 		} else {
-		  logMessage('Unable to set commit message in SCM input box.', 'error');
-		  showErrorMessage('Unable to set commit message in SCM input box.');
+		  logMessage(MSG_SCM_INPUTBOX_FAIL, 'error');
+		  showErrorMessage(MSG_SCM_INPUTBOX_FAIL);
 		}
 	  }
 	} catch (error) {
@@ -140,7 +152,7 @@ export async function runGitCommand(repo: any, args: string[]): Promise<string |
 			showInformationMessage(`Git diff generated in ${diffTimeTaken} seconds.`);
 			return diff;
 		} else {
-			logMessage('No staged changes found.');
+			logMessage(MSG_NO_STAGED_CHANGES);
 			return null;
 		}
 	} catch (error) {
@@ -152,7 +164,7 @@ export async function runGitCommand(repo: any, args: string[]): Promise<string |
 async function getActiveRepository() {
 	const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
 	if (!gitExtension) {
-	  logMessage('Git extension not found.', 'error');
+	  logMessage(MSG_GIT_EXTENSION_NOT_FOUND, 'error');
 	  return null;
 	}
   
@@ -186,6 +198,58 @@ async function getActiveRepository() {
 	logMessage('No active repository matches the current document.', 'error');
 	return null;
   }
+
+async function getRepositoryFromStagedChanges() {
+	const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports;
+	if (!gitExtension) {
+		logMessage(MSG_GIT_EXTENSION_NOT_FOUND, 'error');
+		return null;
+	}
+
+	const git = gitExtension.getAPI(1);
+	const repositories = git.repositories;
+
+	logMessage(`Searching ${repositories.length} repositories for staged changes...`);
+
+	for (const repo of repositories) {
+		const stagedChanges = repo.state?.indexChanges ?? [];
+		if (stagedChanges.length === 0) {
+			continue;
+		}
+
+		const change = stagedChanges[0];
+		const opened = await openChangeInEditor(change);
+		logMessage(
+			opened
+				? `Opened first staged change to establish active repository: ${repo.rootUri.fsPath}`
+				: `Found staged changes but could not open the first change: ${repo.rootUri.fsPath}`,
+			opened ? 'info' : 'error'
+		);
+		return repo;
+	}
+
+	logMessage('No staged changes found in any repository.', 'error');
+	return null;
+}
+
+async function openChangeInEditor(change: any): Promise<boolean> {
+	const candidateUris = [change?.uri, change?.originalUri, change?.renameUri].filter(Boolean);
+	if (candidateUris.length === 0) {
+		logMessage('Staged change has no URI to open.', 'error');
+		return false;
+	}
+
+	for (const uri of candidateUris) {
+		try {
+			await vscode.window.showTextDocument(uri, { preview: false, preserveFocus: true });
+			return true;
+		} catch (error) {
+			logMessage(`Failed to open staged change in editor: ${error}`, 'error');
+		}
+	}
+
+	return false;
+}
   
 export async function generateCommitMessageFromAI(stagedChanges: string): Promise<string | null> {
 	logMessage('Entering generateCommitMessageFromAI function...');
@@ -215,8 +279,8 @@ export async function generateCommitMessageFromAI(stagedChanges: string): Promis
   
 	const model = resolveModel(selectedModel, customModel);
 	if (!model) {
-		logMessage('Custom model is selected but no model name was provided.', 'error');
-		showErrorMessage('Custom model is selected but no model name was provided.');
+		logMessage(MSG_CUSTOM_MODEL_MISSING, 'error');
+		showErrorMessage(MSG_CUSTOM_MODEL_MISSING);
 		return null;
 	}
 
@@ -290,8 +354,8 @@ export async function generateCommitMessageFromAI(stagedChanges: string): Promis
 
 		const responseText = extractResponseText(response.data);
 		if (!responseText) {
-			logMessage('OpenAI response did not contain output text.', 'error');
-			showErrorMessage('OpenAI response did not contain output text.');
+			logMessage(MSG_OPENAI_NO_OUTPUT, 'error');
+			showErrorMessage(MSG_OPENAI_NO_OUTPUT);
 			return null;
 		}
 

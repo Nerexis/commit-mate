@@ -8,6 +8,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - None
 
+## [0.0.6] - 2026-01-31
+
+- Fall back to the first staged change when no active repository is detected.
+- Centralize repeated user/log messages into constants.
+
 ## [0.0.5] - 2026-01-31
 
 - Switch OpenAI integration to the Responses API by default.
