@@ -8,6 +8,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - None
 
+## [0.0.7] - 2026-01-31
+
+- Trim whitespace for string settings before use.
+
 ## [0.0.6] - 2026-01-31
 
 - Fall back to the first staged change when no active repository is detected.
