@@ -6,4 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- None
+
+## [0.0.5] - 2026-01-31
+
+- Switch OpenAI integration to the Responses API by default.
+- Add GPT-5 model selection with custom model support.
+- Add configuration for temperature, reasoning effort, reasoning summary, and verbosity.
+- Improve OpenAI error logging and response handling.

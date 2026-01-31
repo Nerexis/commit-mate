@@ -1,12 +1,12 @@
 # CommitMate
 
-[![Version](https://img.shields.io/badge/version-0.0.4-blue.svg)](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate)  
-**CommitMate** is a Visual Studio Code extension that helps generate concise and context-aware commit messages based on staged Git changes using OpenAI's GPT models.
+[![Version](https://img.shields.io/badge/version-0.0.5-blue.svg)](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate)  
+**CommitMate** is an AI-powered Visual Studio Code extension that helps generate concise and context-aware commit messages based on staged Git changes using OpenAI's GPT models.
 
 ## Features
 
 - **Commit Message Generation**: Generate meaningful commit messages based on the diff of your staged Git files.
-- **OpenAI GPT Integration**: Leverages OpenAI's GPT models (default `gpt-4o-mini`) to create tailored commit messages.
+- **OpenAI GPT Integration**: Leverages GPT-5 series models via the OpenAI Responses API (default `gpt-5-nano`) to create tailored commit messages.
 - **Multiple Repositories**: Works with multiple Git repositories within your workspace.
 - **Customizable Messages**: Define your own request prompts for OpenAI, such as prefix and suffix for the message prompt.
 - **Onboarding Process**: First-time setup guides users through setting their OpenAI API key for seamless use.
@@ -45,15 +45,23 @@ You can customize these settings under:
 
 ## Configuration
 
-The following configuration options are available:
+The following configuration options are available (model support varies by parameter):
 
-| Option                         | Default Value                                                         | Description                                                                                                 |
-|---------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| `commitmate.openAiApiKey`       | `""` (Required)                                                       | Your OpenAI API key.                                                                                         |
-| `commitmate.openAiModel`        | `"gpt-4o-mini"`                                                     | The GPT model to use (you can set this to a custom model if desired).                                        |
-| `commitmate.openAiUrl`          | `"https://api.openai.com/v1/chat/completions"`                         | The URL of the OpenAI API.                                                                                   |
-| `commitmate.requestPrefix`      | `"Here is source code diff:"`                                          | Text added at the beginning of the request sent to OpenAI.                                                   |
-| `commitmate.requestSuffix`      | `Generate a short or medium length commit message for these changes. Don't hallucinate, don't skip any changes, use past tense. Make sure to use past tense like word 'add' should be 'added' etc.`| Instructions sent to OpenAI to guide the generation of the commit message.                                   |
+| Option                                   | Default Value                                                         | Description                                                                                                 |
+|------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `commitmate.openAiApiKey`                | `""` (Required)                                                       | Your OpenAI API key.                                                                                        |
+| `commitmate.openAiModel`                 | `"gpt-5-nano"`                                                        | The GPT-5 model to use (or select `custom`).                                                                |
+| `commitmate.openAiCustomModel`           | `""`                                                                  | Custom model name (used only when `openAiModel` is `custom`).                                                |
+| `commitmate.openAiUrl`                   | `"https://api.openai.com/v1/responses"`                               | The OpenAI Responses API URL.                                                                               |
+| `commitmate.openAiTemperatureEnabled`    | `false`                                                               | Enable sending `temperature` to the API.                                                                    |
+| `commitmate.openAiTemperature`           | `0.4`                                                                 | Controls randomness vs determinism (0.0–2.0).                                                               |
+| `commitmate.openAiReasoningEffortEnabled`| `true`                                                                | Enable sending `reasoning.effort` to the API.                                                               |
+| `commitmate.openAiReasoningEffort`       | `"minimal"`                                                           | Controls how much reasoning the model performs (varies by model).                                           |
+| `commitmate.openAiReasoningSummary`      | `"null"`                                                              | Reasoning summary mode. `null` sends `summary: null` to match Playground behavior.                         |
+| `commitmate.openAiVerbosityEnabled`      | `true`                                                                | Enable sending `text.verbosity` to the API.                                                                 |
+| `commitmate.openAiVerbosity`             | `"low"`                                                               | Controls response detail level (`low`/`medium`/`high`).                                                     |
+| `commitmate.requestPrefix`               | `"Here is source code diff:"`                                         | Text added at the beginning of the request sent to OpenAI.                                                  |
+| `commitmate.requestSuffix`               | `Generate a short or medium length commit message for these changes. Don't hallucinate, don't skip any changes, use past tense. Make sure to use past tense like word 'add' should be 'added' etc.` | Instructions sent to OpenAI to guide the generation of the commit message.                                  |
 
 ## Example Usage
 
@@ -77,18 +85,21 @@ The following configuration options are available:
 - **Rate Limiting**: If you make too many requests to OpenAI within a short period, you may hit rate limits, causing the commit message generation to fail. Please refer to OpenAI's [rate limit documentation](https://platform.openai.com/docs/guides/rate-limits) for more information.
   
 - **Large Diffs**: For very large diffs, the API might take longer to respond or may return incomplete results. We recommend breaking large diffs into smaller commits when using CommitMate. 
+- **Model Parameter Support**: Some models do not support `temperature`, `reasoning`, or `verbosity`. Disable those options or choose supported values to avoid 400 errors.
 
 ## Troubleshooting
 
 If you run into issues, try the following:
 
 1. **API Key Issues**: Make sure you've entered the correct OpenAI API key in your settings. You can re-enter the key by navigating to:
+   **Settings** > **CommitMate** > **OpenAI API Key**
    
 2. **No Commit Message Generated**: Ensure you have staged changes before triggering the command. If no changes are staged, CommitMate will not generate a commit message.
 
 3. **API Errors**: If you see errors related to the OpenAI API, check your internet connection and verify that your API key is correct. If you're encountering frequent API errors, you may have exceeded OpenAI's rate limits.
 
 4. **Logging**: For debugging, logs are printed to the VS Code output console. You can view them by navigating to:
+   **View** > **Output** > **Log (Extension Host)** or **Help** > **Toggle Developer Tools** > **Console**
 
 ## Roadmap
 
@@ -123,9 +134,9 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 ---
 
-Thank you for using CommitMate! If you enjoy this extension, please consider Your feedback helps us improve and build new features!
+Thank you for using CommitMate! If you enjoy this extension, please consider leaving feedback. Your feedback helps us improve and build new features!
 
 *Created by Damian Winnicki*
 
-If you like me work, please donate:
+If you like my work, please donate:
 https://www.buymeacoffee.com/nerexis

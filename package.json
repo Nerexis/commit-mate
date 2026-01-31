@@ -2,7 +2,7 @@
   "name": "commitmate",
   "displayName": "CommitMate",
   "description": "VSCode extension that generates commit messages for staged Git files",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.91.1"
   },
@@ -55,13 +55,109 @@
         },
         "commitmate.openAiModel": {
           "type": "string",
-          "default": "gpt-4o-mini",
-          "description": "The model used by the OpenAI API"
+          "default": "gpt-5-nano",
+          "enum": [
+            "gpt-5",
+            "gpt-5-mini",
+            "gpt-5-nano",
+            "gpt-5-pro",
+            "gpt-5.1",
+            "gpt-5.2",
+            "gpt-5.1-codex",
+            "gpt-5.1-codex-mini",
+            "gpt-5.1-codex-max",
+            "gpt-5.2-codex",
+            "gpt-5-chat-latest",
+            "gpt-5.1-chat-latest",
+            "gpt-5.2-chat-latest",
+            "custom"
+          ],
+          "description": "The model used by the OpenAI API",
+          "markdownDescription": "Choose a GPT-5 series model, or select `custom` to use your own model name.",
+          "scope": "window"
+        },
+        "commitmate.openAiCustomModel": {
+          "type": "string",
+          "default": "",
+          "description": "Custom model name (used only when the model is set to custom).",
+          "markdownDescription": "Custom model name used only when `commitmate.openAiModel` is set to `custom`.",
+          "scope": "window"
         },
         "commitmate.openAiUrl": {
           "type": "string",
-          "default": "https://api.openai.com/v1/chat/completions",
-          "description": "The OpenAI API URL"
+          "default": "https://api.openai.com/v1/responses",
+          "description": "The OpenAI Responses API URL"
+        },
+        "commitmate.openAiTemperatureEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable sending a temperature value to the OpenAI API.",
+          "markdownDescription": "When enabled, CommitMate sends a `temperature` value to the OpenAI API. Some models do **not** support temperature and will return an error if it is sent.",
+          "scope": "window"
+        },
+        "commitmate.openAiTemperature": {
+          "type": "number",
+          "default": 0.4,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Controls randomness vs. determinism in responses.",
+          "markdownDescription": "Controls randomness vs. determinism in responses. Lower values (e.g., **0.2**) are more focused and consistent; higher values (e.g., **1.0**) are more creative and varied. **Model support:** temperature is supported by GPT-4 series models and by `gpt-5.1` / `gpt-5.2` only when reasoning effort is set to `none`. For other GPT-5 family models (e.g., `gpt-5`, `gpt-5-mini`, `gpt-5-nano`), sending `temperature` will return an error.",
+          "scope": "window"
+        },
+        "commitmate.openAiReasoningEffortEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable sending reasoning effort to the OpenAI API.",
+          "markdownDescription": "When enabled, CommitMate sends a `reasoning_effort` value to the OpenAI API. Disable this for custom models or if you prefer to rely on the model default.",
+          "scope": "window"
+        },
+        "commitmate.openAiReasoningEffort": {
+          "type": "string",
+          "default": "minimal",
+          "enum": [
+            "none",
+            "minimal",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "description": "Controls how much reasoning the model performs before responding.",
+          "markdownDescription": "Controls how much reasoning the model performs before responding. Lower values are faster; higher values are more thorough. **Support varies by model.** CommitMate will only send values supported by the selected GPT-5 model and will skip unsupported values. For `custom` models, the value is sent as-is.",
+          "scope": "window"
+        },
+        "commitmate.openAiReasoningSummary": {
+          "type": "string",
+          "default": "null",
+          "enum": [
+            "null",
+            "none",
+            "auto",
+            "concise",
+            "detailed"
+          ],
+          "description": "Controls whether the model returns a reasoning summary.",
+          "markdownDescription": "Controls whether the model returns a reasoning summary. `null` means the field is omitted. Use `none` to explicitly disable summaries, or `auto` / `concise` / `detailed` to request one. **Support varies by model.**",
+          "scope": "window"
+        },
+        "commitmate.openAiVerbosityEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable sending verbosity to the OpenAI API.",
+          "markdownDescription": "When enabled, CommitMate sends a `verbosity` value to the OpenAI API. Disable this for custom models or if you prefer to rely on the model default.",
+          "scope": "window"
+        },
+        "commitmate.openAiVerbosity": {
+          "type": "string",
+          "default": "low",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "description": "Controls how detailed the model's response should be.",
+          "markdownDescription": "Controls how detailed the model's response should be. Lower values are more concise; higher values are more verbose. **Support varies by model.** If unsupported, the API may return an error.",
+          "scope": "window"
         },
         "commitmate.requestPrefix": {
           "type": "string",
