@@ -19,7 +19,7 @@ const MSG_SCM_INPUTBOX_FAIL = 'Unable to set commit message in SCM input box.';
 
 export async function checkOnboarding(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration(moduleCfg);
-	const openAiKey = config.get<string>(openAiApiKeyCfg);
+	const openAiKey = getTrimmedSetting(config, openAiApiKeyCfg);
   	
 	if (openAiKey && openAiKey.trim().length > 0) {
 	  context.globalState.update(ONBOARDING_COMPLETE_KEY, true);
@@ -257,19 +257,19 @@ export async function generateCommitMessageFromAI(stagedChanges: string): Promis
 
 	const config = vscode.workspace.getConfiguration('commitmate');
     
-	const openAiKey = config.get<string>('openAiApiKey');
-	const selectedModel = config.get<string>('openAiModel', 'gpt-5-mini');
-	const customModel = config.get<string>('openAiCustomModel', '');
-	const openAiUrl = config.get<string>('openAiUrl', 'https://api.openai.com/v1/responses');
+	const openAiKey = getTrimmedSetting(config, 'openAiApiKey');
+	const selectedModel = getTrimmedSetting(config, 'openAiModel', 'gpt-5-mini');
+	const customModel = getTrimmedSetting(config, 'openAiCustomModel', '');
+	const openAiUrl = getTrimmedSetting(config, 'openAiUrl', 'https://api.openai.com/v1/responses');
 	const temperatureEnabled = config.get<boolean>('openAiTemperatureEnabled', true);
 	const temperature = config.get<number>('openAiTemperature', 0.4);
 	const reasoningEffortEnabled = config.get<boolean>('openAiReasoningEffortEnabled', true);
-	const reasoningEffort = config.get<string>('openAiReasoningEffort', 'medium');
-	const reasoningSummary = config.get<string>('openAiReasoningSummary', 'null');
+	const reasoningEffort = getTrimmedSetting(config, 'openAiReasoningEffort', 'medium');
+	const reasoningSummary = getTrimmedSetting(config, 'openAiReasoningSummary', 'null');
 	const verbosityEnabled = config.get<boolean>('openAiVerbosityEnabled', true);
-	const verbosity = config.get<string>('openAiVerbosity', 'medium');
-	const prefix = config.get<string>('requestPrefix');
-	const suffix = config.get<string>('requestSuffix');
+	const verbosity = getTrimmedSetting(config, 'openAiVerbosity', 'medium');
+	const prefix = getTrimmedSetting(config, 'requestPrefix');
+	const suffix = getTrimmedSetting(config, 'requestSuffix');
   
 	if (!openAiKey) {
 		logMessage('OpenAI API key not found in settings.', 'error');
@@ -414,6 +414,16 @@ function normalizeVerbosity(value: string | undefined) {
 		return normalized;
 	}
 	return 'medium';
+}
+
+function getTrimmedSetting(
+	config: vscode.WorkspaceConfiguration,
+	key: string,
+	fallback = ''
+) {
+	const raw = config.get<string>(key, fallback);
+	const trimmed = (raw ?? '').trim();
+	return trimmed.length > 0 ? trimmed : '';
 }
 
 function extractResponseText(payload: unknown): string | null {
