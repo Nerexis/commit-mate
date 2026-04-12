@@ -1,5 +1,6 @@
 .vscode/**
 .vscode-test/**
+.venv-icon/**
 src/**
 .gitignore
 .yarnrc
