@@ -1,12 +1,12 @@
 # CommitMate
 
-[![Version](https://img.shields.io/badge/version-0.0.7-blue.svg)](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate)  
+[![Version](https://img.shields.io/badge/version-0.0.8-blue.svg)](https://marketplace.visualstudio.com/items?itemName=nerexis.commitmate)  
 **CommitMate** is an AI-powered Visual Studio Code extension that helps generate concise and context-aware commit messages based on staged Git changes using OpenAI's GPT models.
 
 ## Features
 
 - **Commit Message Generation**: Generate meaningful commit messages based on the diff of your staged Git files.
-- **OpenAI GPT Integration**: Leverages GPT-5 series models via the OpenAI Responses API (default `gpt-5-nano`) to create tailored commit messages.
+- **OpenAI GPT Integration**: Leverages GPT-5.4 series models via the OpenAI Responses API (default `gpt-5.4-nano`) to create tailored commit messages.
 - **Multiple Repositories**: Works with multiple Git repositories within your workspace.
 - **Customizable Messages**: Define your own request prompts for OpenAI, such as prefix and suffix for the message prompt.
 - **Onboarding Process**: First-time setup guides users through setting their OpenAI API key for seamless use.
@@ -50,13 +50,13 @@ The following configuration options are available (model support varies by param
 | Option                                   | Default Value                                                         | Description                                                                                                 |
 |------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | `commitmate.openAiApiKey`                | `""` (Required)                                                       | Your OpenAI API key.                                                                                        |
-| `commitmate.openAiModel`                 | `"gpt-5-nano"`                                                        | The GPT-5 model to use (or select `custom`).                                                                |
+| `commitmate.openAiModel`                 | `"gpt-5.4-nano"`                                                      | The GPT-5.4 model to use (or select `custom`): `gpt-5.4`, `gpt-5.4-mini`, or `gpt-5.4-nano`.              |
 | `commitmate.openAiCustomModel`           | `""`                                                                  | Custom model name (used only when `openAiModel` is `custom`).                                                |
 | `commitmate.openAiUrl`                   | `"https://api.openai.com/v1/responses"`                               | The OpenAI Responses API URL.                                                                               |
 | `commitmate.openAiTemperatureEnabled`    | `false`                                                               | Enable sending `temperature` to the API.                                                                    |
 | `commitmate.openAiTemperature`           | `0.4`                                                                 | Controls randomness vs determinism (0.0–2.0).                                                               |
 | `commitmate.openAiReasoningEffortEnabled`| `true`                                                                | Enable sending `reasoning.effort` to the API.                                                               |
-| `commitmate.openAiReasoningEffort`       | `"minimal"`                                                           | Controls how much reasoning the model performs (varies by model).                                           |
+| `commitmate.openAiReasoningEffort`       | `"none"`                                                              | Controls how much reasoning the model performs for GPT-5.4 models: `none`, `low`, `medium`, `high`, `xhigh`. |
 | `commitmate.openAiReasoningSummary`      | `"null"`                                                              | Reasoning summary mode. `null` sends `summary: null` to match Playground behavior.                         |
 | `commitmate.openAiVerbosityEnabled`      | `true`                                                                | Enable sending `text.verbosity` to the API.                                                                 |
 | `commitmate.openAiVerbosity`             | `"low"`                                                               | Controls response detail level (`low`/`medium`/`high`).                                                     |

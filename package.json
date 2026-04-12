@@ -1,8 +1,9 @@
 {
   "name": "commitmate",
   "displayName": "CommitMate",
+  "icon": "images/icon.png",
   "description": "VSCode extension that generates commit messages for staged Git files",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "engines": {
     "vscode": "^1.91.1"
   },
@@ -55,25 +56,15 @@
         },
         "commitmate.openAiModel": {
           "type": "string",
-          "default": "gpt-5-nano",
+          "default": "gpt-5.4-nano",
           "enum": [
-            "gpt-5",
-            "gpt-5-mini",
-            "gpt-5-nano",
-            "gpt-5-pro",
-            "gpt-5.1",
-            "gpt-5.2",
-            "gpt-5.1-codex",
-            "gpt-5.1-codex-mini",
-            "gpt-5.1-codex-max",
-            "gpt-5.2-codex",
-            "gpt-5-chat-latest",
-            "gpt-5.1-chat-latest",
-            "gpt-5.2-chat-latest",
+            "gpt-5.4",
+            "gpt-5.4-mini",
+            "gpt-5.4-nano",
             "custom"
           ],
           "description": "The model used by the OpenAI API",
-          "markdownDescription": "Choose a GPT-5 series model, or select `custom` to use your own model name.",
+          "markdownDescription": "Choose a GPT-5.4 series model, or select `custom` to use your own model name.",
           "scope": "window"
         },
         "commitmate.openAiCustomModel": {
@@ -101,7 +92,7 @@
           "minimum": 0,
           "maximum": 2,
           "description": "Controls randomness vs. determinism in responses.",
-          "markdownDescription": "Controls randomness vs. determinism in responses. Lower values (e.g., **0.2**) are more focused and consistent; higher values (e.g., **1.0**) are more creative and varied. **Model support:** temperature is supported by GPT-4 series models and by `gpt-5.1` / `gpt-5.2` only when reasoning effort is set to `none`. For other GPT-5 family models (e.g., `gpt-5`, `gpt-5-mini`, `gpt-5-nano`), sending `temperature` will return an error.",
+          "markdownDescription": "Controls randomness vs. determinism in responses. Lower values (e.g., **0.2**) are more focused and consistent; higher values (e.g., **1.0**) are more creative and varied. **Model support:** support varies by model. If the selected model rejects `temperature`, disable this option to avoid 400 errors.",
           "scope": "window"
         },
         "commitmate.openAiReasoningEffortEnabled": {
@@ -113,17 +104,16 @@
         },
         "commitmate.openAiReasoningEffort": {
           "type": "string",
-          "default": "minimal",
+          "default": "none",
           "enum": [
             "none",
-            "minimal",
             "low",
             "medium",
             "high",
             "xhigh"
           ],
           "description": "Controls how much reasoning the model performs before responding.",
-          "markdownDescription": "Controls how much reasoning the model performs before responding. Lower values are faster; higher values are more thorough. **Support varies by model.** CommitMate will only send values supported by the selected GPT-5 model and will skip unsupported values. For `custom` models, the value is sent as-is.",
+          "markdownDescription": "Controls how much reasoning the model performs before responding. Lower values are faster; higher values are more thorough. Supported for the built-in GPT-5.4 models are `none`, `low`, `medium`, `high`, and `xhigh`. For `custom` models, the value is sent as-is.",
           "scope": "window"
         },
         "commitmate.openAiReasoningSummary": {

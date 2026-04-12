@@ -1,0 +1,42 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A121F"/>
+      <stop offset="1" stop-color="#131B2F"/>
+    </linearGradient>
+    <radialGradient id="glowTop" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(392 92) rotate(90) scale(185)">
+      <stop stop-color="#3EE0FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#3EE0FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowBottom" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(104 418) rotate(90) scale(205)">
+      <stop stop-color="#6D55FF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#6D55FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="badge" x1="387" y1="216" x2="387" y2="282" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#33E4FF"/>
+      <stop offset="1" stop-color="#7BD2FF"/>
+    </linearGradient>
+    <filter id="shadow" x="36" y="94" width="422" height="250" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="5" result="effect1_foregroundBlur"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <circle cx="392" cy="92" r="185" fill="url(#glowTop)"/>
+  <circle cx="104" cy="418" r="205" fill="url(#glowBottom)"/>
+  <rect x="18" y="18" width="476" height="476" rx="76" fill="white" fill-opacity="0.03" stroke="white" stroke-opacity="0.12" stroke-width="2"/>
+  <rect x="64" y="74" width="168" height="14" rx="7" fill="#43E4FF"/>
+
+  <g filter="url(#shadow)">
+    <text x="56" y="198" fill="white" fill-opacity="0.28" font-family="DejaVu Sans, Arial, sans-serif" font-size="94" font-weight="700">Commit</text>
+    <text x="56" y="302" fill="white" fill-opacity="0.28" font-family="DejaVu Sans, Arial, sans-serif" font-size="94" font-weight="700">Mate</text>
+  </g>
+  <text x="56" y="196" fill="#F5F8FF" font-family="DejaVu Sans, Arial, sans-serif" font-size="94" font-weight="700">Commit</text>
+  <text x="56" y="300" fill="#F5F8FF" font-family="DejaVu Sans, Arial, sans-serif" font-size="94" font-weight="700">Mate</text>
+  <text x="58" y="366" fill="#AAB7CD" font-family="DejaVu Sans, Arial, sans-serif" font-size="34" font-weight="400" letter-spacing="0.5">smart commit assist</text>
+
+  <rect x="318" y="216" width="138" height="66" rx="26" fill="url(#badge)" stroke="white" stroke-opacity="0.3" stroke-width="2"/>
+  <text x="387" y="261" text-anchor="middle" fill="#081622" font-family="DejaVu Sans, Arial, sans-serif" font-size="42" font-weight="700">AI</text>
+</svg>

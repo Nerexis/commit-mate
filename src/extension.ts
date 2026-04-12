@@ -49,6 +49,8 @@ export async function checkOnboarding(context: vscode.ExtensionContext) {
   
 export async function activate(context: vscode.ExtensionContext) {
   logMessage('Extension activated.');
+
+  await migrateLegacyOpenAiModelSetting();
   
   await checkOnboarding(context);
 
@@ -106,6 +108,52 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   context.subscriptions.push(disposableOpenAiKey);
+}
+
+async function migrateLegacyOpenAiModelSetting() {
+	const config = vscode.workspace.getConfiguration(moduleCfg);
+	const inspected = config.inspect<string>('openAiModel');
+	if (!inspected) {
+		return;
+	}
+
+	const targets: Array<{ value: unknown; target: vscode.ConfigurationTarget }> = [
+		{ value: inspected.globalValue, target: vscode.ConfigurationTarget.Global },
+		{ value: inspected.workspaceValue, target: vscode.ConfigurationTarget.Workspace },
+		{ value: inspected.workspaceFolderValue, target: vscode.ConfigurationTarget.WorkspaceFolder }
+	];
+
+	for (const { value, target } of targets) {
+		if (typeof value !== 'string') {
+			continue;
+		}
+
+		const migrated = normalizeLegacyOpenAiModel(value);
+		if (!migrated) {
+			continue;
+		}
+
+		await config.update('openAiModel', migrated, target);
+		logMessage(`Migrated legacy OpenAI model setting from '${value}' to '${migrated}'.`);
+	}
+}
+
+function normalizeLegacyOpenAiModel(value: string) {
+	const trimmed = value.trim();
+	const parts = trimmed.split('-');
+	if (parts[0] !== 'gpt' || parts[1] !== '5' || parts[2] !== '4') {
+		return null;
+	}
+
+	if (parts.length === 3) {
+		return 'gpt-5.4';
+	}
+
+	if (parts.length === 4 && (parts[3] === 'mini' || parts[3] === 'nano')) {
+		return `gpt-5.4-${parts[3]}`;
+	}
+
+	return null;
 }
 
 export async function runGitCommand(repo: any, args: string[]): Promise<string | null> {
@@ -258,13 +306,13 @@ export async function generateCommitMessageFromAI(stagedChanges: string): Promis
 	const config = vscode.workspace.getConfiguration('commitmate');
     
 	const openAiKey = getTrimmedSetting(config, 'openAiApiKey');
-	const selectedModel = getTrimmedSetting(config, 'openAiModel', 'gpt-5-mini');
+	const selectedModel = getTrimmedSetting(config, 'openAiModel', 'gpt-5.4-nano');
 	const customModel = getTrimmedSetting(config, 'openAiCustomModel', '');
 	const openAiUrl = getTrimmedSetting(config, 'openAiUrl', 'https://api.openai.com/v1/responses');
 	const temperatureEnabled = config.get<boolean>('openAiTemperatureEnabled', true);
 	const temperature = config.get<number>('openAiTemperature', 0.4);
 	const reasoningEffortEnabled = config.get<boolean>('openAiReasoningEffortEnabled', true);
-	const reasoningEffort = getTrimmedSetting(config, 'openAiReasoningEffort', 'medium');
+	const reasoningEffort = getTrimmedSetting(config, 'openAiReasoningEffort', 'none');
 	const reasoningSummary = getTrimmedSetting(config, 'openAiReasoningSummary', 'null');
 	const verbosityEnabled = config.get<boolean>('openAiVerbosityEnabled', true);
 	const verbosity = getTrimmedSetting(config, 'openAiVerbosity', 'medium');
@@ -365,7 +413,7 @@ export async function generateCommitMessageFromAI(stagedChanges: string): Promis
 		const errorMessage = `Error from OpenAI API: ${errorDetails.summary}`;
 		logMessage(errorMessage, 'error');
 		logMessage(`OpenAI error details: ${errorDetails.details}`, 'error');
-		showErrorMessage(errorMessage);
+		showErrorMessage(buildOpenAiErrorMessage(errorMessage, errorDetails.status));
 		if (errorDetails.responseErrorMessage) {
 			showErrorMessage(`OpenAI error message: ${errorDetails.responseErrorMessage}`);
 		}
@@ -469,19 +517,9 @@ function extractResponseText(payload: unknown): string | null {
 
 function getSupportedReasoningEfforts(model: string): Set<string> | null {
 	const map: Record<string, string[]> = {
-		'gpt-5': ['minimal', 'low', 'medium', 'high'],
-		'gpt-5-mini': ['minimal', 'low', 'medium', 'high'],
-		'gpt-5-nano': ['minimal', 'low', 'medium', 'high'],
-		'gpt-5.1': ['none', 'low', 'medium', 'high'],
-		'gpt-5.2': ['none', 'low', 'medium', 'high'],
-		'gpt-5.1-codex': ['none', 'low', 'medium', 'high'],
-		'gpt-5.1-codex-mini': ['none', 'low', 'medium', 'high'],
-		'gpt-5.1-codex-max': ['none', 'low', 'medium', 'high'],
-		'gpt-5.2-codex': ['none', 'low', 'medium', 'high'],
-		'gpt-5-chat-latest': ['minimal', 'low', 'medium', 'high'],
-		'gpt-5.1-chat-latest': ['none', 'low', 'medium', 'high'],
-		'gpt-5.2-chat-latest': ['none', 'low', 'medium', 'high'],
-		'gpt-5-pro': ['high']
+		'gpt-5.4': ['none', 'low', 'medium', 'high', 'xhigh'],
+		'gpt-5.4-mini': ['none', 'low', 'medium', 'high', 'xhigh'],
+		'gpt-5.4-nano': ['none', 'low', 'medium', 'high', 'xhigh'],
 	};
 
 	const supported = map[model];
@@ -492,6 +530,7 @@ function formatOpenAiError(error: unknown, openAiUrl: string) {
 	if (!axios.isAxiosError(error)) {
 		const message = error instanceof Error ? error.message : String(error);
 		return {
+			status: null as number | null,
 			summary: message,
 			details: `Non-Axios error while calling ${openAiUrl}. Message: ${message}`,
 			responseErrorMessage: null as string | null
@@ -515,6 +554,7 @@ function formatOpenAiError(error: unknown, openAiUrl: string) {
 	].filter(Boolean);
 
 	return {
+		status: status ?? null,
 		summary: summaryParts.join(' ').trim(),
 		details: [
 			`request: ${requestMethod} ${requestUrl}`,
@@ -526,6 +566,14 @@ function formatOpenAiError(error: unknown, openAiUrl: string) {
 		].join(' | '),
 		responseErrorMessage
 	};
+}
+
+function buildOpenAiErrorMessage(baseMessage: string, status: number | null) {
+	if (status === 400) {
+		return `${baseMessage}\n\nTip: check whether the selected model is in the allowlist for this OpenAI account.`;
+	}
+
+	return baseMessage;
 }
 
 function extractOpenAiErrorMessage(payload: unknown): string | null {

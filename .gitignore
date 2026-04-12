@@ -1,6 +1,7 @@
 out
 dist
 node_modules
+.venv-icon/
 .vscode-test/
 *.vsix
 .history

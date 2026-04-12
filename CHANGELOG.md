@@ -8,6 +8,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - None
 
+## [0.0.8] - 2026-04-12
+
+- Add support for `gpt-5.4`, `gpt-5.4-mini`, and `gpt-5.4-nano` model selection.
+- Remove legacy non-5.4 built-in model options and focus the extension on the GPT-5.4 family.
+- Set the default OpenAI model to `gpt-5.4-nano` across configuration, runtime fallback, and documentation.
+- Update `gpt-5.4`, `gpt-5.4-mini`, and `gpt-5.4-nano` reasoning support to `none`, `low`, `medium`, `high`, and `xhigh`.
+- Change the default reasoning effort to `none` so it is compatible with the default model.
+- Add a new Marketplace icon with highlighted `AI` branding.
+
 ## [0.0.7] - 2026-01-31
 
 - Trim whitespace for string settings before use.
